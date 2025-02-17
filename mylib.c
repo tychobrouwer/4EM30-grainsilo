@@ -154,15 +154,37 @@ void calcInteractionCL
     {
       int jCell = iCell;
       
-      i = 0;
-      for (i = 0; i < 9; i++) {
+      int row, col, neighbourId;
+      for (int i = 0; i < 9; i++) 
+      {
         // TODO
         // Get indexes of bounding cells
-        // call intForce for all particles in the bounding cells
+        // Current implementation does unnecessary work when cell is on the grid boundary
+        row = iCell / NR_CELL_X;
+        col = iCell % NR_CELL_X;
+
+        // Loop over row belowe, the same and above cell
+        for (int j =- 1; j < 2; j++) 
+        {
+          // Loop over cell left, the same and right of cell
+          for (int k=-1; k < 2; k++) 
+          {
+            // Exclude cell itself (j,k)=(0,0)
+            if (j != 0 && k != 0) 
+            {
+              neighbourId = iCell + j*NR_CELL_X + k;
+
+              // call intForce for all particles in the bounding cells
+
+            }
+          }
+        }
       }
     }
   }
 }
+
+
 
 
 //------------------------------------------------------------------------------
