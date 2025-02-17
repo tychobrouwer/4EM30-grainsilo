@@ -66,7 +66,8 @@ void plot
 void readInput
   
   ( char*           name  ,
-    Plist*          pl    )
+    Plist*          pl    ,
+    CLList*         cl    )
   
 {
   FILE         *fp;
@@ -96,6 +97,8 @@ void readInput
     pl->p[iPar].radius = r;
     
     pl->p[iPar].mass = pl->p[iPar].radius*pl->p[iPar].radius;
+
+    addToCLList( cl , &pl->p[iPar].r );
    
     if ( iPar < nFix )
     {  
@@ -130,6 +133,33 @@ void calcInteraction
     for ( jPar = iPar+1 ; jPar < nPar ; jPar++ )
     {
       intForce( &pl->p[iPar] , &pl->p[jPar] );    
+    }
+  }
+}
+
+
+void calcInteractionCL
+
+  ( Plist         *pl ,
+    CLList        *cl )
+ 
+{
+  int      iCell;
+
+  for(iCell = 0; iCell < NR_CELL_X*NR_CELL_Y; iCell++)
+  {
+    int iPar = cl->head[iCell];
+    
+    while(iPar != -1)
+    {
+      int jCell = iCell;
+      
+      i = 0;
+      for (i = 0; i < 9; i++) {
+        // TODO
+        // Get indexes of bounding cells
+        // call intForce for all particles in the bounding cells
+      }
     }
   }
 }
@@ -198,13 +228,14 @@ void addGravity
 
 void addParticle
 
-  ( Plist*         pl )
+  ( Plist*         pl, 
+    CLList*        cl )
 
 {
   double xpos;
   double rad;
   
-  int iPar = pl->ntot;	
+  int iPar = pl->ntot;
 
   initParticle( &pl->p[iPar] );
 
@@ -212,7 +243,9 @@ void addParticle
       
   pl->p[iPar].r.x = xpos;
   pl->p[iPar].r.y = 4.0;
-  
+
+  addToCLList( cl , &pl->p[iPar].r );
+
   pl->p[iPar].v.y = -2.0;
     
   if( iPar%2 == 0 )
@@ -449,4 +482,66 @@ void showInfo
   printf("Writing file        : %s\n",svgfile);
   printf("Kinetic energy      : %f\n",ekin);
   printf("Number of particles : %d\n\n",ntot);
+}
+
+
+//------------------------------------------------------------------------------
+//  initCLList
+//------------------------------------------------------------------------------
+
+void initCLList
+
+  ( CLList*       cl )
+
+{
+  int i;
+  
+  for ( i = 0 ; i < NR_CELL_X*NR_CELL_Y ; i++ )
+  {
+    cl->head[i] = -1;
+  }
+  i = 0;
+  for ( i = 0 ; i < MAX_PARTICLES ; i++ )
+  {
+    cl->next[i] = -1;
+  }
+  
+  cl->ntot = 0;
+}
+
+//------------------------------------------------------------------------------
+//  addToCLList
+//------------------------------------------------------------------------------
+
+void addToCLList
+
+  ( CLList*       cl ,
+    Vec2*         vec  )
+
+{
+  int i,j;
+  
+  i = (int)((vec->x+1.3)/CELL_WIDTH);
+  j = (int)(vec->y+1/CELL_HEIGHT);
+  
+  int cell = j * NR_CELL_X + i;
+
+  int id = cl->head[cell];
+
+  while (id != -1)
+  {
+    id = cl->next[id];
+  }
+
+  if (cl->head[cell] == -1)
+  {
+    cl->head[cell] = cl->ntot;
+  }
+  else
+  {
+    cl->next[id] = cl->ntot;
+  }
+
+  cl->next[cl->ntot] = -1;
+  cl->ntot++;
 }

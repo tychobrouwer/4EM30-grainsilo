@@ -10,6 +10,7 @@
 #include "mylib.h"
 
 #define TOTALPARTICLES 2000    // Number of particles that are added to the silo.
+#define USE_ORIGINAL_ALG 0     // Use the original algorithm for the collision detection.
 
 int main( void )
 
@@ -20,17 +21,21 @@ int main( void )
   double       ekin  = 0.0;          // Kinetic Energy
   
   Plist        plist;
+  
+  CLList  cllist;
+
+  initCLList( &cllist );
      
-  readInput( "silo.dat" , &plist );
+  readInput( "silo.dat" , &plist , &cllist);
     
   while( iCyc < 100 || ekin > 1.0e-8 )
   {
     iCyc++;
-        
+
     if ( iCyc%50 == 0 && plist.ntot < plist.nwall + plist.ndoor + TOTALPARTICLES 
                       && plist.ndoor > 0 )
     {	
-      addParticle( &plist );
+      addParticle( &plist, &cllist );
     }
     
     ekin = solve( &plist );

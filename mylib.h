@@ -23,6 +23,11 @@
 #define GRAVITY 9.81
 #define MAX_PARTICLES 3000
 
+#define NR_CELL_X   10
+#define NR_CELL_Y   10
+#define CELL_WIDTH  2.6/NR_CELL_X
+#define CELL_HEIGHT 5.0/NR_CELL_Y
+
 #define B_CONST  0.05
 #define K_CONST  100.0
 #define DT       0.001
@@ -63,6 +68,17 @@ typedef struct
   int      ntot;
 } Plist;
 
+//------------------------------------------------------------------------------
+// Definition of new type CellLinkedList (linked list of particles in a cell)
+//   note that the length of the array is set statically.
+//------------------------------------------------------------------------------
+
+typedef struct
+{
+  int head[NR_CELL_X * NR_CELL_Y];
+  int next[MAX_PARTICLES];
+  int ntot;
+} CLList;
 
 //------------------------------------------------------------------------------
 //  Plot the silo and particle in SVG format
@@ -89,7 +105,8 @@ void plot
 void readInput
 
   ( char*           name  ,
-    Plist*          plist );
+    Plist*          plist ,
+    CLList*         cllist);
 
 
 //------------------------------------------------------------------------------
@@ -102,7 +119,8 @@ void readInput
 
 void addParticle
 
-  ( Plist*          plist );
+  ( Plist*          plist,
+    CLList*         cllist );
 
 
 //------------------------------------------------------------------------------
@@ -227,6 +245,7 @@ void getFilename
   ( char*           names ,
     int             k     );
 
+
 //------------------------------------------------------------------------------
 //  pre:    -
 //  post:   writes number of particles, current ouptut file and kinetic energy 
@@ -240,5 +259,18 @@ void showInfo
   ( char*    svgfile ,
     double   ekin    ,
     int      ntot    );
+
+
+
+void addToCLList
+
+  ( CLList*         cllist ,
+    Vec2*           vec    );
+
+
+
+void initCLList
+
+    ( CLList*       cl );
 
 #endif
