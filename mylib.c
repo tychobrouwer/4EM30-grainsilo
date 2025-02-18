@@ -152,16 +152,13 @@ void calcInteractionCL
     
     while(iPar != -1)
     {
-      int jCell = iCell;
       
-      int row, col, neighbourId;
+      int iNeigh;
       for (int i = 0; i < 9; i++) 
       {
         // TODO
         // Get indexes of bounding cells
         // Current implementation does unnecessary work when cell is on the grid boundary
-        row = iCell / NR_CELL_X;
-        col = iCell % NR_CELL_X;
 
         // Loop over row belowe, the same and above cell
         for (int j =- 1; j < 2; j++) 
@@ -172,14 +169,28 @@ void calcInteractionCL
             // Exclude cell itself (j,k)=(0,0)
             if (j != 0 && k != 0) 
             {
-              neighbourId = iCell + j*NR_CELL_X + k;
+              iNeigh = iCell + j*NR_CELL_X + k;
 
-              // call intForce for all particles in the bounding cells
-
+              // check if this neighbour exists, could be a non-existent cell
+              if (iNeigh >= 0 && iNeigh < NR_CELL_X*NR_CELL_Y){
+              
+                // get all particales in neighbouring cell
+               int iParNeigh = cl->head[iNeigh];
+                
+                while(iParNeigh != -1)
+               { 
+                 // call intForce for all particles in the bounding cells
+                 intForce( &pl->p[iPar] , &pl->p[iParNeigh] );
+                 iParNeigh = cl->next[iParNeigh];
+              }         
+              }
             }
           }
         }
       }
+
+    iPar = cl->next[iPar];
+
     }
   }
 }
@@ -331,7 +342,9 @@ void initParticle
 
 double solve
 
-  ( Plist*   pl )
+  ( Plist*   pl,
+    CLList*  cl,
+    int      USE_ORIGINAL_ALG )
 
 {
   const double dt2 = DT * DT;
@@ -354,7 +367,11 @@ double solve
     pl->p[iPar].f.y = 0.;
   }
   
-  calcInteraction( pl );
+  if (USE_ORIGINAL_ALG == 1) {
+    calcInteraction( pl );
+  } else if (USE_ORIGINAL_ALG == 0) {
+    calcInteractionCL( pl , cl );
+  }
   
   addGravity( pl );
      

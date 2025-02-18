@@ -38,7 +38,7 @@ int main( void )
       addParticle( &plist, &cllist );
     }
     
-    ekin = solve( &plist );
+    ekin = solve( &plist , &cllist , USE_ORIGINAL_ALG );
      
     checkParticles( &plist );
  
@@ -56,7 +56,11 @@ int main( void )
     if ( iCyc > 100 && ekin < 1.0e-4 && plist.ndoor > 0 )
     {
       openDoor( &plist );
-    }   
+    }
+
+    if ( iPlot >= 200){
+      break;
+    }
   }
 
   return 0;

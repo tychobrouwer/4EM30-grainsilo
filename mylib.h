@@ -161,7 +161,9 @@ void openDoor
 
 double solve
 
-  ( Plist*          plist );
+  ( Plist*          plist,
+    CLList*         cllist,
+    int             USE_ORIGINAL_ALG );
 
 
 //------------------------------------------------------------------------------
