@@ -14,10 +14,11 @@ endif
 
 # Compiler and Flags
 
-CC     = gcc
-CFLAGS = -lm -O3 -Wno-unused-result
-DEPS   = mylib.h
-OBJ    = silo.o mylib.o
+CC       = gcc
+CFLAGS   = -lm -O3 -Wno-unused-result
+DEPS     = mylib.h
+OBJ      = silo.o mylib.o
+OBJ_TEST = test.o mylib.o
 
 # Build object files
 
@@ -26,13 +27,17 @@ OBJ    = silo.o mylib.o
 
 # Build the executable
 
-all: silo$(EXE)
+all: silo$(EXE) test$(EXE)
 
 silo$(EXE): $(OBJ)
+	$(CC) -o $@ $^ $(CFLAGS)
+
+test$(EXE): $(OBJ_TEST)
 	$(CC) -o $@ $^ $(CFLAGS)
 
 # Clean up
 
 clean:
-	$(RM) *.o silo$(EXE)
+	$(RM) *.o silo$(EXE) test$(EXE)
+	
 

@@ -6,7 +6,7 @@
  *
  * Multiple particle dynamics simulation
  *
- * 
+ *
  * Part of assignment 1 in the course 4EM30:
  *   Scientific Computing for Mechanical Engineering
  *   2021-2022
@@ -23,14 +23,14 @@
 #define GRAVITY 9.81
 #define MAX_PARTICLES 3000
 
-#define NR_CELL_X   10
-#define NR_CELL_Y   10
-#define CELL_WIDTH  2.6/NR_CELL_X
-#define CELL_HEIGHT 5.0/NR_CELL_Y
+#define NR_CELL_X 10
+#define NR_CELL_Y 10
+#define CELL_WIDTH (2.6 / NR_CELL_X)
+#define CELL_HEIGHT (5.0 / NR_CELL_Y)
 
-#define B_CONST  0.05
-#define K_CONST  100.0
-#define DT       0.001
+#define B_CONST 0.05
+#define K_CONST 100.0
+#define DT 0.001
 #define PI_CONST 3.1415
 
 //------------------------------------------------------------------------------
@@ -39,19 +39,19 @@
 
 typedef struct
 {
-  double   x,y;
+  double x, y;
 } Vec2;
 
 //------------------------------------------------------------------------------
-// Definition of new type Particle, containing position(r), velocity(v), 
-//   acceleration(a), force(f), radius (radius) and mass. 
+// Definition of new type Particle, containing position(r), velocity(v),
+//   acceleration(a), force(f), radius (radius) and mass.
 //------------------------------------------------------------------------------
 
 typedef struct
 {
-  Vec2     r,v,a,f;  // position, velocity, accelleration, force
-  double   radius,mass;
-  int      type;
+  Vec2 r, v, a, f; // position, velocity, accelleration, force
+  double radius, mass;
+  int type;
 
 } Particle;
 
@@ -63,9 +63,9 @@ typedef struct
 typedef struct
 {
   Particle p[MAX_PARTICLES];
-  int      nwall;
-  int      ndoor;
-  int      ntot;
+  int nwall;
+  int ndoor;
+  int ntot;
 } Plist;
 
 //------------------------------------------------------------------------------
@@ -82,17 +82,15 @@ typedef struct
 
 //------------------------------------------------------------------------------
 //  Plot the silo and particle in SVG format
-//  pre:    correct filename (ends with .svg) 
+//  pre:    correct filename (ends with .svg)
 //  post:   writes a file to the current directory (.svg)
 //  return: -
 //------------------------------------------------------------------------------
 
-
 void plot
 
-  ( char*           name  ,
-    Plist*          plist );
-
+    (char *name,
+     Plist *plist);
 
 //------------------------------------------------------------------------------
 //  Reads the input file
@@ -101,13 +99,10 @@ void plot
 //  return: -
 //------------------------------------------------------------------------------
 
-
 void readInput
 
-  ( char*           name  ,
-    Plist*          plist ,
-    CLList*         cllist);
-
+    (char *name,
+     Plist *plist);
 
 //------------------------------------------------------------------------------
 //  Adds a particle to the list from a point on top of the silo
@@ -116,12 +111,10 @@ void readInput
 //  return: -
 //------------------------------------------------------------------------------
 
-
 void addParticle
 
-  ( Plist*          plist,
-    CLList*         cllist );
-
+    (Plist *plist,
+     CLList *cllist);
 
 //------------------------------------------------------------------------------
 //  Initialises particle
@@ -130,26 +123,22 @@ void addParticle
 //  return: -
 //------------------------------------------------------------------------------
 
-
 void initParticle
 
-  ( Particle*       plist );
-
+    (Particle *plist);
 
 //------------------------------------------------------------------------------
 //  Opens the silo door
 //  pre:    -
 //  post:   removes the particles that represent the door and change
-//          the colors of the dynamic particles to make a banded 
+//          the colors of the dynamic particles to make a banded
 //          structures (for visualisation)
 //  return: -
 //------------------------------------------------------------------------------
 
-
 void openDoor
 
-  ( Plist*          plist );
-
+    (Plist *plist);
 
 //------------------------------------------------------------------------------
 //  Solve a single step in the verlet algorithm
@@ -158,27 +147,23 @@ void openDoor
 //  return: kinetic energy
 //------------------------------------------------------------------------------
 
-
 double solve
 
-  ( Plist*          plist,
-    CLList*         cllist,
-    int             USE_ORIGINAL_ALG );
-
+    (Plist *plist,
+     CLList *cllist,
+     int USE_ORIGINAL_ALG);
 
 //------------------------------------------------------------------------------
-//  Checks if particle is below the line at y = -1.0. IF so, the particle is 
+//  Checks if particle is below the line at y = -1.0. IF so, the particle is
 //    removed
 //  pre:    -
 //  post:   Particles that are below y = -1.0 are removed.
 //  return: -
 //------------------------------------------------------------------------------
 
-
 void checkParticles
-  
-  ( Plist*          plist );
-  
+
+    (Plist *plist);
 
 //------------------------------------------------------------------------------
 //  Calculate all particle interaction forces
@@ -187,12 +172,10 @@ void checkParticles
 //  return: -
 //------------------------------------------------------------------------------
 
-
 void calcInteraction
-  
-  ( Plist*          plist );
 
- 
+    (Plist *plist);
+
 //------------------------------------------------------------------------------
 //  Calculate the interaction force between two partcles
 //  pre:    two valid particles
@@ -200,13 +183,11 @@ void calcInteraction
 //  return: -
 //------------------------------------------------------------------------------
 
-
 void intForce
-  
-  ( Particle*       pi ,
-    Particle*       pj );
- 
-  
+
+    (Particle *pi,
+     Particle *pj);
+
 //------------------------------------------------------------------------------
 //  Add gravity force to all particles
 //  pre:    -
@@ -214,11 +195,9 @@ void intForce
 //  return: -
 //------------------------------------------------------------------------------
 
-
 void addGravity
 
-  ( Plist*          plist );
-
+    (Plist *plist);
 
 //------------------------------------------------------------------------------
 //  Removes particle from the list
@@ -227,12 +206,10 @@ void addGravity
 //  return: -
 //------------------------------------------------------------------------------
 
-
 void removeParticle
 
-  ( Plist*          plist ,
-    int             iPar  );
-
+    (Plist *plist,
+     int iPar);
 
 //------------------------------------------------------------------------------
 //  Get filename for svg output file
@@ -241,38 +218,31 @@ void removeParticle
 //  return: -
 //------------------------------------------------------------------------------
 
-
 void getFilename
 
-  ( char*           names ,
-    int             k     );
-
+    (char *names,
+     int k);
 
 //------------------------------------------------------------------------------
 //  pre:    -
-//  post:   writes number of particles, current ouptut file and kinetic energy 
+//  post:   writes number of particles, current ouptut file and kinetic energy
 //            to the screen
 //  return: -
 //------------------------------------------------------------------------------
 
-
 void showInfo
 
-  ( char*    svgfile ,
-    double   ekin    ,
-    int      ntot    );
-
-
+    (char *svgfile,
+     double ekin,
+     int ntot);
 
 void addToCLList
 
-  ( CLList*         cllist ,
-    Vec2*           vec    );
-
-
+    (CLList *cllist,
+     Vec2 vec);
 
 void initCLList
 
-    ( CLList*       cl );
+    (CLList *cl);
 
 #endif
