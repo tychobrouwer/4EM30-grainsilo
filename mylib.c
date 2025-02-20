@@ -145,34 +145,29 @@ void calcInteractionCL
       int iNeigh;
       for (int i = 0; i < 9; i++)
       {
-        // TODO
-        // Get indexes of bounding cells
-        // Current implementation does unnecessary work when cell is on the grid boundary
-
         // Loop over row belowe, the same and above cell
         for (int j = -1; j < 2; j++)
         {
           // Loop over cell left, the same and right of cell
           for (int k = -1; k < 2; k++)
           {
-            // Exclude cell itself (j,k)=(0,0)
-            if (j != 0 && k != 0)
+            iNeigh = iCell + j * NR_CELL_X + k;
+
+            // check if this neighbour exists, could be a non-existent cell
+            if (iNeigh >= 0 && iNeigh < NR_CELL_X * NR_CELL_Y)
             {
-              iNeigh = iCell + j * NR_CELL_X + k;
 
-              // check if this neighbour exists, could be a non-existent cell
-              if (iNeigh >= 0 && iNeigh < NR_CELL_X * NR_CELL_Y)
+              // get all particales in neighbouring cell
+              int iParNeigh = cl->head[iNeigh];
+
+              while (iParNeigh != -1)
               {
-
-                // get all particales in neighbouring cell
-                int iParNeigh = cl->head[iNeigh];
-
-                while (iParNeigh != -1)
+                if (iPar != iParNeigh)
                 {
                   // call intForce for all particles in the bounding cells
                   intForce(&pl->p[iPar], &pl->p[iParNeigh]);
-                  iParNeigh = cl->next[iParNeigh];
                 }
+                iParNeigh = cl->next[iParNeigh];
               }
             }
           }
@@ -242,8 +237,7 @@ void addGravity
 
 void addParticle
 
-    (Plist *pl,
-     CLList *cl)
+    (Plist *pl)
 
 {
   double xpos;
@@ -254,6 +248,7 @@ void addParticle
   initParticle(&pl->p[iPar]);
 
   xpos = -0.25 + rand() % 11 * 0.05;
+  assert(xpos >= -0.25 && xpos <= 0.25);
 
   pl->p[iPar].r.x = xpos;
   pl->p[iPar].r.y = 4.0;

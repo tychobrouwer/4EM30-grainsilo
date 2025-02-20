@@ -20,6 +20,7 @@ int main(void)
   double ekin = 0.0; // Kinetic Energy
 
   Plist plist;
+  CLList cllist;
 
   readInput("silo.dat", &plist);
 
@@ -29,16 +30,15 @@ int main(void)
 
     int i;
 
-    CLList cllist;
+    if (iCyc % 50 == 0 && plist.ntot < plist.nwall + plist.ndoor + TOTALPARTICLES && plist.ndoor > 0)
+    {
+      addParticle(&plist);
+    }
+
     initCLList(&cllist);
     for (i = 0; i < plist.ntot; i++)
     {
       addToCLList(&cllist, plist.p[i].r);
-    }
-
-    if (iCyc % 50 == 0 && plist.ntot < plist.nwall + plist.ndoor + TOTALPARTICLES && plist.ndoor > 0)
-    {
-      addParticle(&plist, &cllist);
     }
 
     ekin = solve(&plist, &cllist, USE_ORIGINAL_ALG);

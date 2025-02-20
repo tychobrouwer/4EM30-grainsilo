@@ -3,4 +3,6 @@
 *.o
 silo
 silo.exe
+test
+test.exe
 

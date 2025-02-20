@@ -19,6 +19,7 @@
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #define GRAVITY 9.81
 #define MAX_PARTICLES 3000
@@ -113,8 +114,7 @@ void readInput
 
 void addParticle
 
-    (Plist *plist,
-     CLList *cllist);
+    (Plist *plist);
 
 //------------------------------------------------------------------------------
 //  Initialises particle
