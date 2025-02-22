@@ -1,0 +1,5 @@
+Seconds for first 100000 cycles
+
+OLD ALG:        172.922000 sec
+NEW ALG NO OMP:  52.640000 sec
+NEW ALG OMP:     17.000000 sec

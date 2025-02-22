@@ -15,7 +15,7 @@ endif
 # Compiler and Flags
 
 CC       = gcc
-CFLAGS   = -lm -O3 -Wno-unused-result
+CFLAGS   = -lm -O3 -Wno-unused-result -fopenmp
 DEPS     = mylib.h
 OBJ      = silo.o mylib.o
 OBJ_TEST = test.o mylib.o

@@ -12,7 +12,6 @@
  *
  *----------------------------------------------------------------------------*/
 
-#include <stdlib.h>
 #include "mylib.h"
 
 //------------------------------------------------------------------------------
@@ -140,41 +139,49 @@ void calcInteractionCL
       -1, 0, 1,
       NR_CELL_X - 1, NR_CELL_X, NR_CELL_X + 1};
 
-  // Iterate over all cells
-  for (iCell = 0; iCell < numCells; iCell++)
+#if ENABLE_OMP
+// Iterate over all cells
+#pragma omp parallel
   {
-    int iPar = cl->head[iCell];
-
-    // Iterate over all particles in this cell
-    while (iPar != -1)
+#pragma omp for schedule(dynamic) nowait
+#endif
+    for (iCell = 0; iCell < numCells; iCell++)
     {
-      int iNeighIdx;
+      int iPar = cl->head[iCell];
 
-      // Iterate over neighboring cells using the precomputed offsets
-      for (int n = 0; n < 9; n++)
+      // Iterate over all particles in this cell
+      while (iPar != -1)
       {
-        iNeighIdx = iCell + neighborOffsets[n];
+        int iNeighIdx;
 
-        // Check if the neighboring cell is within bounds
-        if (iNeighIdx >= 0 && iNeighIdx < numCells)
+        // Iterate over neighboring cells using the precomputed offsets
+        for (int n = 0; n < 9; n++)
         {
-          int iParNeigh = cl->head[iNeighIdx];
+          iNeighIdx = iCell + neighborOffsets[n];
 
-          // Iterate over particles in the neighboring cell
-          while (iParNeigh != -1)
+          // Check if the neighboring cell is within bounds
+          if (iNeighIdx >= 0 && iNeighIdx < numCells)
           {
-            if (iPar < iParNeigh)
-            { // Avoid redundant calculations
-              intForce(&pl->p[iPar], &pl->p[iParNeigh]);
+            int iParNeigh = cl->head[iNeighIdx];
+
+            // Iterate over particles in the neighboring cell
+            while (iParNeigh != -1)
+            {
+              if (iPar < iParNeigh)
+              {
+                intForce(&pl->p[iPar], &pl->p[iParNeigh]);
+              }
+
+              iParNeigh = cl->next[iParNeigh];
             }
-            
-            iParNeigh = cl->next[iParNeigh];
           }
         }
+        iPar = cl->next[iPar]; // Move to next particle
       }
-      iPar = cl->next[iPar]; // Move to next particle
     }
+#if ENABLE_OMP
   }
+#endif
 }
 
 //------------------------------------------------------------------------------
