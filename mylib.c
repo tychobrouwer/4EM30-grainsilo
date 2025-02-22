@@ -516,8 +516,6 @@ void addToCLList
 
   int cell = j * NR_CELL_X + i;
 
-  int id = cl->head[cell];
-
   int tailId = cl->tail[cell];
   if (tailId == -1)
   {
