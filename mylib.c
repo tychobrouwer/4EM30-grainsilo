@@ -140,7 +140,7 @@ void calcInteractionCL
       -1, 0, 1,
       NR_CELL_X - 1, NR_CELL_X, NR_CELL_X + 1};
 
-  //
+  // Iterate over all cells
   for (iCell = 0; iCell < numCells; iCell++)
   {
     int iPar = cl->head[iCell];
@@ -163,10 +163,11 @@ void calcInteractionCL
           // Iterate over particles in the neighboring cell
           while (iParNeigh != -1)
           {
-            if (iPar != iParNeigh)
-            {
+            if (iPar < iParNeigh)
+            { // Avoid redundant calculations
               intForce(&pl->p[iPar], &pl->p[iParNeigh]);
             }
+            
             iParNeigh = cl->next[iParNeigh];
           }
         }
