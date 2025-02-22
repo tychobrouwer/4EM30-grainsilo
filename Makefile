@@ -38,4 +38,4 @@ test$(EXE): $(OBJ_TEST)
 # Clean up
 
 clean:
-	$(RM) *.o silo$(EXE) test$(EXE)
+	$(RM) *.o silo$(EXE) test$(EXE) *.out
