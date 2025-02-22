@@ -489,6 +489,7 @@ void initCLList
   for (i = 0; i < NR_CELL_X * NR_CELL_Y; i++)
   {
     cl->head[i] = -1;
+    cl->tail[i] = -1;
   }
 
   for (i = 0; i < MAX_PARTICLES; i++)
@@ -517,22 +518,17 @@ void addToCLList
 
   int id = cl->head[cell];
 
-  int prevId = -1;
-  while (id != -1)
-  {
-    prevId = id;
-    id = cl->next[id];
-  }
-
-  if (cl->head[cell] == -1)
+  int tailId = cl->tail[cell];
+  if (tailId == -1)
   {
     cl->head[cell] = cl->ntot;
   }
   else
   {
-    cl->next[prevId] = cl->ntot;
+    cl->next[tailId] = cl->ntot;
   }
 
-  cl->next[cl->ntot] = -1;
+  cl->next[cl->ntot] = -1; // New item points to null
+  cl->tail[cell] = cl->ntot; // Update tail to new item
   cl->ntot++;
 }

@@ -15,7 +15,7 @@ endif
 # Compiler and Flags
 
 CC       = gcc
-CFLAGS   = -lm -O3 -Wno-unused-result -fopenmp
+CFLAGS   = -lm -O3 -Wno-unused-result -fopenmp -pg
 DEPS     = mylib.h
 OBJ      = silo.o mylib.o
 OBJ_TEST = test.o mylib.o
@@ -39,5 +39,3 @@ test$(EXE): $(OBJ_TEST)
 
 clean:
 	$(RM) *.o silo$(EXE) test$(EXE)
-	
-

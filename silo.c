@@ -8,7 +8,6 @@
 
 #include "consts.h"
 #include "mylib.h"
-#include <time.h>
 
 #define TOTALPARTICLES 2000   // Number of particles that are added to the silo.
 
@@ -22,13 +21,6 @@ int main(void)
 
 #if ENABLE_OMP
   omp_set_num_threads(NUM_THREADS);
-#endif
-
-#if ENABLE_PERF_MEASURE
-  time_t start, end;
-  double elapsed_time;
-  time(&start);
-
 #endif
 
   Plist plist;
@@ -80,12 +72,6 @@ int main(void)
       break;
     }
   }
-
-#if ENABLE_PERF_MEASURE
-  time(&end);
-  elapsed_time = difftime(end, start);
-  printf("Elapsed time: %lf seconds\n", elapsed_time);
-#endif
 
   return 0;
 }

@@ -5,4 +5,5 @@ silo
 silo.exe
 test
 test.exe
-
+gmon.out
+.vscode

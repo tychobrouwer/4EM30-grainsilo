@@ -80,6 +80,7 @@ typedef struct
 typedef struct
 {
   int head[NR_CELL_X * NR_CELL_Y];
+  int tail[NR_CELL_X * NR_CELL_Y];
   int next[MAX_PARTICLES];
   int ntot;
 } CLList;
