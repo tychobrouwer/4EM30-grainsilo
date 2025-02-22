@@ -133,48 +133,45 @@ void calcInteractionCL
      CLList *cl)
 
 {
-  int iCell;
+  int iCell, numCells = NR_CELL_X * NR_CELL_Y;
 
-  for (iCell = 0; iCell < NR_CELL_X * NR_CELL_Y; iCell++)
+  const int neighborOffsets[9] = {
+      -NR_CELL_X - 1, -NR_CELL_X, -NR_CELL_X + 1,
+      -1, 0, 1,
+      NR_CELL_X - 1, NR_CELL_X, NR_CELL_X + 1};
+
+  //
+  for (iCell = 0; iCell < numCells; iCell++)
   {
     int iPar = cl->head[iCell];
 
+    // Iterate over all particles in this cell
     while (iPar != -1)
     {
+      int iNeighIdx;
 
-      int iNeigh;
-      for (int i = 0; i < 9; i++)
+      // Iterate over neighboring cells using the precomputed offsets
+      for (int n = 0; n < 9; n++)
       {
-        // Loop over row belowe, the same and above cell
-        for (int j = -1; j < 2; j++)
+        iNeighIdx = iCell + neighborOffsets[n];
+
+        // Check if the neighboring cell is within bounds
+        if (iNeighIdx >= 0 && iNeighIdx < numCells)
         {
-          // Loop over cell left, the same and right of cell
-          for (int k = -1; k < 2; k++)
+          int iParNeigh = cl->head[iNeighIdx];
+
+          // Iterate over particles in the neighboring cell
+          while (iParNeigh != -1)
           {
-            iNeigh = iCell + j * NR_CELL_X + k;
-
-            // check if this neighbour exists, could be a non-existent cell
-            if (iNeigh >= 0 && iNeigh < NR_CELL_X * NR_CELL_Y)
+            if (iPar != iParNeigh)
             {
-
-              // get all particales in neighbouring cell
-              int iParNeigh = cl->head[iNeigh];
-
-              while (iParNeigh != -1)
-              {
-                if (iPar != iParNeigh)
-                {
-                  // call intForce for all particles in the bounding cells
-                  intForce(&pl->p[iPar], &pl->p[iParNeigh]);
-                }
-                iParNeigh = cl->next[iParNeigh];
-              }
+              intForce(&pl->p[iPar], &pl->p[iParNeigh]);
             }
+            iParNeigh = cl->next[iParNeigh];
           }
         }
       }
-
-      iPar = cl->next[iPar];
+      iPar = cl->next[iPar]; // Move to next particle
     }
   }
 }
@@ -450,24 +447,27 @@ void getFilename
   int m;
   char cc[4];
 
-  strcpy(names, "output000.svg");
+  // Start with "figures/output000.svg"
+  strcpy(names, "figures/output000.svg");
 
-  m = sprintf(cc, "%d", k);
+  // Convert k to string
+  sprintf(cc, "%d", k);
 
+  // Place digits at the correct positions
   if (k < 10)
   {
-    names[8] = cc[0];
+    names[16] = cc[0]; // "figures/output00X.svg"
   }
   else if (k < 100)
   {
-    names[7] = cc[0];
-    names[8] = cc[1];
+    names[15] = cc[0]; // "figures/output0XX.svg"
+    names[16] = cc[1];
   }
   else
   {
-    names[6] = cc[0];
-    names[7] = cc[1];
-    names[8] = cc[2];
+    names[14] = cc[0]; // "figures/outputXXX.svg"
+    names[15] = cc[1];
+    names[16] = cc[2];
   }
 }
 
