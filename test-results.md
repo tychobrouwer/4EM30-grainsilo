@@ -130,3 +130,4 @@ It should be noted this is CPU time, not wall time.
 - The new algorithm is faster than the old algorithm
 - The new algorithm is fastest with 6 threads due to the overhead of threads for this number of particles and iterations
 - While using OMP ```addToCLList``` is the most time consuming function (it is called a lot)
+- Using the linked list with tail is faster than using the linked list without tail
