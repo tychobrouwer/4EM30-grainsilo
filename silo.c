@@ -28,7 +28,7 @@ int main(void)
 
   readInput("silo.dat", &plist);
 
-  while ((iCyc < 100 || ekin > 1.0e-8) && iCyc < 100000)
+  while (iCyc < 100 || ekin > 1.0e-8)
   {
     iCyc++;
 

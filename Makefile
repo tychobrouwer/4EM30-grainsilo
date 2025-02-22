@@ -5,7 +5,7 @@
 # Detect OS
 
 ifeq ($(OS),Windows_NT)
-    RM = del /Q
+    RM = rm -f
     EXE = .exe
 else
     RM = rm -f
@@ -15,7 +15,7 @@ endif
 # Compiler and Flags
 
 CC       = gcc
-CFLAGS   = -lm -O3 -Wno-unused-result -fopenmp -pg
+CFLAGS   = -lm -O3 -Wno-unused-result -fopenmp
 DEPS     = mylib.h
 OBJ      = silo.o mylib.o
 OBJ_TEST = test.o mylib.o
