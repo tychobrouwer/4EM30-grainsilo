@@ -132,56 +132,36 @@ void calcInteractionCL
      CLList *cl)
 
 {
-  int iCell, numCells = NR_CELL_X * NR_CELL_Y;
-
   const int neighborOffsets[9] = {
       -NR_CELL_X - 1, -NR_CELL_X, -NR_CELL_X + 1,
       -1, 0, 1,
       NR_CELL_X - 1, NR_CELL_X, NR_CELL_X + 1};
 
 #if ENABLE_OMP
-// Iterate over all cells
-#pragma omp parallel
-  {
-#pragma omp for schedule(dynamic) nowait
+#pragma omp parallel for schedule(dynamic)
 #endif
-    for (iCell = 0; iCell < numCells; iCell++)
+  for (int iCell = 0; iCell < NR_CELL_X * NR_CELL_Y; iCell++)
+  {
+    for (int iPar = cl->head[iCell]; iPar != -1; iPar = cl->next[iPar])
     {
-      int iPar = cl->head[iCell];
-
-      // Iterate over all particles in this cell
-      while (iPar != -1)
+      for (int n = 0; n < 9; n++)
       {
-        int iNeighIdx;
-
-        // Iterate over neighboring cells using the precomputed offsets
-        for (int n = 0; n < 9; n++)
+        int iNeighIdx = iCell + neighborOffsets[n];
+        if (iNeighIdx < 0 || iNeighIdx >= NR_CELL_X * NR_CELL_Y)
         {
-          iNeighIdx = iCell + neighborOffsets[n];
+          continue;
+        }
 
-          // Check if the neighboring cell is within bounds
-          if (iNeighIdx >= 0 && iNeighIdx < numCells)
+        for (int iParNeigh = cl->head[iNeighIdx]; iParNeigh != -1; iParNeigh = cl->next[iParNeigh])
+        {
+          if (iPar < iParNeigh)
           {
-            int iParNeigh = cl->head[iNeighIdx];
-
-            // Iterate over particles in the neighboring cell
-            while (iParNeigh != -1)
-            {
-              if (iPar < iParNeigh)
-              {
-                intForce(&pl->p[iPar], &pl->p[iParNeigh]);
-              }
-
-              iParNeigh = cl->next[iParNeigh];
-            }
+            intForce(&pl->p[iPar], &pl->p[iParNeigh]);
           }
         }
-        iPar = cl->next[iPar]; // Move to next particle
       }
     }
-#if ENABLE_OMP
   }
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -342,13 +322,13 @@ double solve
     pl->p[iPar].f.y = 0.;
   }
 
-  if (USE_ORIGINAL_ALG == 1)
-  {
-    calcInteraction(pl);
-  }
-  else if (USE_ORIGINAL_ALG == 0)
+  if (ENABLE_LL_ALG == 1)
   {
     calcInteractionCL(pl, cl);
+  }
+  else
+  {
+    calcInteraction(pl);
   }
 
   addGravity(pl);

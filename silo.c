@@ -11,7 +11,6 @@
 #include <time.h>
 
 #define TOTALPARTICLES 2000   // Number of particles that are added to the silo.
-#define USE_ORIGINAL_ALG 0    // Use the original algorithm for the collision detection.
 
 int main(void)
 
@@ -25,7 +24,7 @@ int main(void)
   omp_set_num_threads(NUM_THREADS);
 #endif
 
-#if ENABLE_TIME_MEASURE
+#if ENABLE_PERF_MEASURE
   time_t start, end;
   double elapsed_time;
   time(&start);
@@ -54,7 +53,7 @@ int main(void)
       addToCLList(&cllist, plist.p[i].r);
     }
 
-    ekin = solve(&plist, &cllist, USE_ORIGINAL_ALG);
+    ekin = solve(&plist, &cllist, ENABLE_LL_ALG);
 
     checkParticles(&plist);
 
@@ -82,7 +81,7 @@ int main(void)
     }
   }
 
-#if ENABLE_TIME_MEASURE
+#if ENABLE_PERF_MEASURE
   time(&end);
   elapsed_time = difftime(end, start);
   printf("Elapsed time: %lf seconds\n", elapsed_time);
