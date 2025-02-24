@@ -137,6 +137,8 @@ void calcInteractionCL
       -1, 0, 1,
       NR_CELL_X - 1, NR_CELL_X, NR_CELL_X + 1};
 
+  Vec2 df = {0., 0.};
+
 #if ENABLE_OMP
 #pragma omp parallel for schedule(dynamic)
 #endif
@@ -191,10 +193,14 @@ void intForce
     f.x = -force * dr.x + B_CONST * (pj->v.x - pi->v.x);
     f.y = -force * dr.y + B_CONST * (pj->v.y - pi->v.y);
 
+#pragma omp atomic
     pi->f.x += f.x;
+#pragma omp atomic
     pi->f.y += f.y;
 
+#pragma omp atomic
     pj->f.x += -f.x;
+#pragma omp atomic
     pj->f.y += -f.y;
   }
 }
@@ -526,7 +532,7 @@ void addToCLList
     cl->next[tailId] = cl->ntot;
   }
 
-  cl->next[cl->ntot] = -1; // New item points to null
+  cl->next[cl->ntot] = -1;   // New item points to null
   cl->tail[cell] = cl->ntot; // Update tail to new item
   cl->ntot++;
 }

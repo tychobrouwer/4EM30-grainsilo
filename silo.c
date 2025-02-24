@@ -9,7 +9,7 @@
 #include "consts.h"
 #include "mylib.h"
 
-#define TOTALPARTICLES 2000   // Number of particles that are added to the silo.
+#define TOTALPARTICLES 2000 // Number of particles that are added to the silo.
 
 int main(void)
 
@@ -62,8 +62,6 @@ int main(void)
 
     if (iCyc > 100 && ekin < 1.0e-4 && plist.ndoor > 0)
     {
-      printf("Opening door\n");
-
       openDoor(&plist);
     }
 

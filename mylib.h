@@ -22,13 +22,15 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
+#if ENABLE_OMP
 #include <omp.h>
+#endif
 
 #define GRAVITY 9.81
 #define MAX_PARTICLES 3000
 
-#define NR_CELL_X 10
-#define NR_CELL_Y 10
+#define NR_CELL_X 25
+#define NR_CELL_Y 49
 #define CELL_WIDTH (2.6 / NR_CELL_X)
 #define CELL_HEIGHT (5.0 / NR_CELL_Y)
 
@@ -43,7 +45,7 @@
 
 typedef struct
 {
-  double x, y;
+    double x, y;
 } Vec2;
 
 //------------------------------------------------------------------------------
@@ -53,9 +55,9 @@ typedef struct
 
 typedef struct
 {
-  Vec2 r, v, a, f; // position, velocity, accelleration, force
-  double radius, mass;
-  int type;
+    Vec2 r, v, a, f; // position, velocity, accelleration, force
+    double radius, mass;
+    int type;
 
 } Particle;
 
@@ -66,10 +68,10 @@ typedef struct
 
 typedef struct
 {
-  Particle p[MAX_PARTICLES];
-  int nwall;
-  int ndoor;
-  int ntot;
+    Particle p[MAX_PARTICLES];
+    int nwall;
+    int ndoor;
+    int ntot;
 } Plist;
 
 //------------------------------------------------------------------------------
@@ -79,10 +81,10 @@ typedef struct
 
 typedef struct
 {
-  int head[NR_CELL_X * NR_CELL_Y];
-  int tail[NR_CELL_X * NR_CELL_Y];
-  int next[MAX_PARTICLES];
-  int ntot;
+    int head[NR_CELL_X * NR_CELL_Y];
+    int tail[NR_CELL_X * NR_CELL_Y];
+    int next[MAX_PARTICLES];
+    int ntot;
 } CLList;
 
 //------------------------------------------------------------------------------
@@ -190,6 +192,18 @@ void calcInteraction
 void intForce
 
     (Particle *pi,
+     Particle *pj);
+
+void intForceCalc
+
+    (Vec2 *df,
+     Particle *pi,
+     Particle *pj);
+
+void intForceUpdate
+
+    (Vec2 df,
+     Particle *pi,
      Particle *pj);
 
 //------------------------------------------------------------------------------
