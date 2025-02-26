@@ -29,9 +29,9 @@
 #define GRAVITY 9.81
 #define MAX_PARTICLES 3000
 
-#define NR_CELL_X 25
-#define NR_CELL_Y 49
-#define CELL_WIDTH (2.6 / NR_CELL_X)
+#define NR_CELL_X 20
+#define NR_CELL_Y 40
+#define CELL_WIDTH (3.0 / NR_CELL_X)
 #define CELL_HEIGHT (5.0 / NR_CELL_Y)
 
 #define B_CONST 0.05
@@ -156,8 +156,7 @@ void openDoor
 double solve
 
     (Plist *plist,
-     CLList *cllist,
-     int USE_ORIGINAL_ALG);
+     CLList *cllist);
 
 //------------------------------------------------------------------------------
 //  Checks if particle is below the line at y = -1.0. IF so, the particle is

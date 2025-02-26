@@ -137,7 +137,6 @@ void calcInteractionCL
       -1, 0, 1,
       NR_CELL_X - 1, NR_CELL_X, NR_CELL_X + 1};
 
-  Vec2 df = {0., 0.};
 
 #if ENABLE_OMP
 #pragma omp parallel for schedule(dynamic)
@@ -304,8 +303,7 @@ void initParticle
 double solve
 
     (Plist *pl,
-     CLList *cl,
-     int USE_ORIGINAL_ALG)
+     CLList *cl)
 
 {
   const double dt2 = DT * DT;
@@ -370,6 +368,10 @@ void checkParticles
     if (pl->p[i].r.y < -1.0)
     {
       removeParticle(pl, i);
+    }
+    else if (pl->p[i].r.x < -1.5 || pl->p[i].r.x > 1.5)
+    {
+      removeParticle(pl,i);
     }
   }
 }
@@ -517,7 +519,7 @@ void addToCLList
 {
   int i, j;
 
-  i = (int)((vec.x + 1.3) / CELL_WIDTH);
+  i = (int)((vec.x + 1.5) / CELL_WIDTH);
   j = (int)((vec.y + 1) / CELL_HEIGHT);
 
   int cell = j * NR_CELL_X + i;
