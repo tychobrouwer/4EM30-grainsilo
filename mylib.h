@@ -32,7 +32,7 @@
 #define NR_CELL_X 20
 #define NR_CELL_Y 40
 #define CELL_WIDTH (3.0 / NR_CELL_X)
-#define CELL_HEIGHT (5.0 / NR_CELL_Y)
+#define CELL_HEIGHT (6.0 / NR_CELL_Y)
 
 #define B_CONST 0.05
 #define K_CONST 100.0
