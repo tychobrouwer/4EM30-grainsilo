@@ -29,8 +29,8 @@
 #define GRAVITY 9.81
 #define MAX_PARTICLES 3000
 
-#define NR_CELL_X 20
-#define NR_CELL_Y 40
+#define NR_CELL_X 30
+#define NR_CELL_Y 60
 #define CELL_WIDTH (3.0 / NR_CELL_X)
 #define CELL_HEIGHT (6.0 / NR_CELL_Y)
 
