@@ -65,6 +65,15 @@ def run():
     # Run the binary
     subprocess.run(["./silo"], check=True)
 
+update_alg(consts_file, False)
+update_omp(consts_file, False)
+
+start_time = time.time()
+run()
+end_time = time.time()
+
+execution_org_alg = end_time - start_time
+
 # Loop through values and update the header file
 update_omp(consts_file, True)
 update_alg(consts_file, True)
@@ -76,7 +85,7 @@ for x, y in values:
     end_time = time.time()
 
     execution_time = end_time - start_time
-    execution_times_omp.append(execution_time)
+    execution_times_omp.append(execution_org_alg/execution_time)
 
 update_omp(consts_file, False)
 update_alg(consts_file, True)
@@ -88,24 +97,9 @@ for x, y in values:
     end_time = time.time()
 
     execution_time = end_time - start_time
-    execution_times_no_omp.append(execution_time)
+    execution_times_no_omp.append(execution_org_alg/execution_time)
 
-update_alg(consts_file, False)
-update_omp(consts_file, False)
-
-start_time = time.time()
-run()
-end_time = time.time()
-
-execution_org_alg = end_time - start_time
-
-# Plot execution times
-plt.plot([f"({x}, {y})" for x, y in values], execution_times_omp, "-b", marker='o', label="omp")
-plt.plot([f"({x}, {y})" for x, y in values], execution_times_no_omp, "-r", marker='o', label="no omp")
-plt.axhline(execution_org_alg, color="g", linestyle="-", label="orginal algorithm")
-plt.legend()
-plt.xlabel("NR_CELL_X, NR_CELL_Y", fontsize=16)
-plt.ylabel("Execution Time (seconds)", fontsize=16)
-plt.title("Execution Time vs. Grid Size", fontsize=16)
-plt.grid()
-plt.show()
+# Print values
+print("Cell sizes: ", [3/x*6/y for x, y in values])
+print("Execution times omp: ", execution_times_omp)
+print("Execution times no omp: ", execution_times_no_omp)
