@@ -8,21 +8,18 @@
 
 #include "consts.h"
 #include "mylib.h"
-#include <time.h>
 
 #define TOTALPARTICLES 2000 // Number of particles that are added to the silo.
 
 int main(void)
 
 { 
-  clock_t t = clock();
-
   int iCyc = 0;      // Cycle counter
   int iPlot = 0;     // Plot counter
   char svgfile[20];  // File name for output
   double ekin = 0.0; // Kinetic Energy
 
-#if ENABLE_OMP
+#ifdef ENABLE_OMP
   omp_set_num_threads(NUM_THREADS);
 #endif
 
@@ -74,9 +71,5 @@ int main(void)
     }
   }
 
-  t = clock() - t;
-  double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
-
-  printf("The simulation took %f seconds to execute \n", time_taken);
   return 0;
 }

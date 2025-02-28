@@ -31,6 +31,11 @@ void plot
 
   of = fopen(name, "w");
 
+#ifdef ENABLE_LL_ALG
+  char buffer[100000];                         // Large buffer
+  setvbuf(of, buffer, _IOFBF, sizeof(buffer)); // Enable buffering
+#endif
+
   fprintf(of, "<?xml version='1.0' standalone='no'?>\n");
   fprintf(of, "<!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN'\n");
   fprintf(of, "'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'>\n");
@@ -137,8 +142,7 @@ void calcInteractionCL
       -1, 0, 1,
       NR_CELL_X - 1, NR_CELL_X, NR_CELL_X + 1};
 
-
-#if ENABLE_OMP
+#ifdef ENABLE_OMP
 #pragma omp parallel for schedule(dynamic)
 #endif
   for (int iCell = 0; iCell < NR_CELL_X * NR_CELL_Y; iCell++)
@@ -149,9 +153,7 @@ void calcInteractionCL
       {
         int iNeighIdx = iCell + neighborOffsets[n];
         if (iNeighIdx < 0 || iNeighIdx >= NR_CELL_X * NR_CELL_Y)
-        {
           continue;
-        }
 
         for (int iParNeigh = cl->head[iNeighIdx]; iParNeigh != -1; iParNeigh = cl->next[iParNeigh])
         {
@@ -181,7 +183,11 @@ void intForce
   dr.x = pj->r.x - pi->r.x;
   dr.y = pj->r.y - pi->r.y;
 
+#ifdef ENABLE_LL_ALG
+  dist = fast_sqrt(dr.x * dr.x + dr.y * dr.y);
+#else
   dist = sqrt(dr.x * dr.x + dr.y * dr.y);
+#endif
 
   eps = pi->radius + pj->radius - dist;
 
@@ -192,16 +198,28 @@ void intForce
     f.x = -force * dr.x + B_CONST * (pj->v.x - pi->v.x);
     f.y = -force * dr.y + B_CONST * (pj->v.y - pi->v.y);
 
+#ifdef ENABLE_OMP
 #pragma omp atomic
+#endif
     pi->f.x += f.x;
+#ifdef ENABLE_OMP
 #pragma omp atomic
+#endif
     pi->f.y += f.y;
-
+#ifdef ENABLE_OMP
 #pragma omp atomic
+#endif
     pj->f.x += -f.x;
+#ifdef ENABLE_OMP
 #pragma omp atomic
+#endif
     pj->f.y += -f.y;
   }
+}
+
+float fast_sqrt(float x)
+{
+  return _mm_cvtss_f32(_mm_sqrt_ss(_mm_set_ss(x)));
 }
 
 //------------------------------------------------------------------------------
@@ -238,7 +256,6 @@ void addParticle
   initParticle(&pl->p[iPar]);
 
   xpos = -0.25 + rand() % 11 * 0.05;
-  assert(xpos >= -0.25 && xpos <= 0.25);
 
   pl->p[iPar].r.x = xpos;
   pl->p[iPar].r.y = 4.0;
@@ -326,14 +343,11 @@ double solve
     pl->p[iPar].f.y = 0.;
   }
 
-  if (ENABLE_LL_ALG == 1)
-  {
-    calcInteractionCL(pl, cl);
-  }
-  else
-  {
-    calcInteraction(pl);
-  }
+#ifdef ENABLE_LL_ALG
+  calcInteractionCL(pl, cl);
+#else
+  calcInteraction(pl);
+#endif
 
   addGravity(pl);
 
@@ -371,7 +385,7 @@ void checkParticles
     }
     else if (pl->p[i].r.x < -1.5 || pl->p[i].r.x > 1.5)
     {
-      removeParticle(pl,i);
+      removeParticle(pl, i);
     }
   }
 }

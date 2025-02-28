@@ -21,10 +21,8 @@
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
-#include <assert.h>
-#if ENABLE_OMP
 #include <omp.h>
-#endif
+#include <immintrin.h>
 
 #define GRAVITY 9.81
 #define MAX_PARTICLES 3000
@@ -45,7 +43,7 @@
 
 typedef struct
 {
-    double x, y;
+    float x, y;
 } Vec2;
 
 //------------------------------------------------------------------------------
@@ -181,6 +179,16 @@ void calcInteraction
 
     (Plist *plist);
 
+void calcInteractionCL
+
+    (Plist *pl,
+     CLList *cl);
+
+void calcInteractionCL_AVX
+
+    (Plist *pl,
+     CLList *cl);
+
 //------------------------------------------------------------------------------
 //  Calculate the interaction force between two partcles
 //  pre:    two valid particles
@@ -204,6 +212,10 @@ void intForceUpdate
     (Vec2 df,
      Particle *pi,
      Particle *pj);
+
+float fast_sqrt
+
+    (float x);
 
 //------------------------------------------------------------------------------
 //  Add gravity force to all particles

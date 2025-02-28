@@ -15,7 +15,7 @@ endif
 # Compiler and Flags
 
 CC       = gcc
-CFLAGS   = -lm -O3 -Wno-unused-result -fopenmp
+CFLAGS   = -lm -O3 -march=native -ffast-math -fopenmp -mavx2 -Wno-unused-result
 DEPS     = mylib.h
 OBJ      = silo.o mylib.o
 OBJ_TEST = test.o mylib.o

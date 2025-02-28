@@ -8,7 +8,7 @@ header_file = "mylib.h"
 consts_file = "consts.h"
 
 # Values to update in the format [(NR_CELL_X, NR_CELL_Y), ...]
-values = [(5, 10), (7, 15), (10, 20), (15, 30), (20, 40), (30, 60)]
+values = [(5, 10), (7, 15), (10, 20), (15, 30), (20, 40), (25, 50), (30, 60)]
 
 execution_times_omp = []
 execution_times_no_omp = []
@@ -27,23 +27,35 @@ def update_header(file_path, x_val, y_val):
 
 def update_omp(file_path, enable):
     with open(file_path, "r") as file:
-        content = file.read()
+        content = file.readlines()
 
-    value = 1 if enable else 0
-    content = re.sub(r"#define ENABLE_OMP \d+", f"#define ENABLE_OMP {value}", content)
+    updated_content = []
+    for line in content:
+        if re.match(r"#define ENABLE_OMP", line) and not enable:
+            updated_content.append("// #define ENABLE_OMP\n")
+        elif re.match(r"// #define ENABLE_OMP", line) and enable:
+            updated_content.append("#define ENABLE_OMP\n")
+        else:
+            updated_content.append(line)
 
     with open(file_path, "w") as file:
-        file.write(content)
+        file.writelines(updated_content)
 
 def update_alg(file_path, enable):
     with open(file_path, "r") as file:
-        content = file.read()
+        content = file.readlines()
 
-    value = 1 if enable else 0
-    content= re.sub(r"#define ENABLE_LL_ALG \d+", f"#define ENABLE_LL_ALG {value}", content)
+    updated_content = []
+    for line in content:
+        if re.match(r"#define ENABLE_LL_ALG", line) and not enable:
+            updated_content.append("// #define ENABLE_LL_ALG\n")
+        elif re.match(r"// #define ENABLE_LL_ALG", line) and enable:
+            updated_content.append("#define ENABLE_LL_ALG\n")
+        else:
+            updated_content.append(line)
 
     with open(file_path, "w") as file:
-        file.write(content)
+        file.writelines(updated_content)
 
 def run():
     # Run make clean && make
@@ -67,6 +79,7 @@ for x, y in values:
     execution_times_omp.append(execution_time)
 
 update_omp(consts_file, False)
+update_alg(consts_file, True)
 for x, y in values:
     update_header(header_file, x, y)
 
@@ -78,6 +91,7 @@ for x, y in values:
     execution_times_no_omp.append(execution_time)
 
 update_alg(consts_file, False)
+update_omp(consts_file, False)
 
 start_time = time.time()
 run()
@@ -90,10 +104,8 @@ plt.plot([f"({x}, {y})" for x, y in values], execution_times_omp, "-b", marker='
 plt.plot([f"({x}, {y})" for x, y in values], execution_times_no_omp, "-r", marker='o', label="no omp")
 plt.axhline(execution_org_alg, color="g", linestyle="-", label="orginal algorithm")
 plt.legend()
-plt.xlabel("NR_CELL_X, NR_CELL_Y")
-plt.ylabel("Execution Time (seconds)")
-plt.title("Execution Time vs. Grid Size")
+plt.xlabel("NR_CELL_X, NR_CELL_Y", fontsize=16)
+plt.ylabel("Execution Time (seconds)", fontsize=16)
+plt.title("Execution Time vs. Grid Size", fontsize=16)
 plt.grid()
 plt.show()
-plt.savefig("results.png")
-
